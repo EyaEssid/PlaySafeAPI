@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  title: PlaySafeAPI
+  title: SafePlayAPI
   version: 1.0.0
 securityDefinitions:
   BearerAuth:

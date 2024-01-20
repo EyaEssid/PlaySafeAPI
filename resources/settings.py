@@ -6,7 +6,7 @@ from flasgger import swag_from
 import bcrypt
 settings_bp = Blueprint("settings", __name__)
 
-#page 3 , when users want to display their current infos 
+# display account  infos 
 @settings_bp.route("/profileinfo", methods=['GET']) 
 @swag_from('main.yaml', endpoint='settings/profileinfo')
 @token_required
@@ -36,7 +36,7 @@ def get_user_info(usert):
     except KeyError:
        abort(404, description="User not found")
 
-# page 3, when users want to display their games stats
+#display  games stats
 @settings_bp.route("/stats", methods=['GET'])
 @swag_from('main.yaml', endpoint='settings/stats')
 @token_required
@@ -60,21 +60,18 @@ def get_user_stats(usert):
             percentage = 0 
         else : 
             percentage = player["games_won"] / player["games_played"]
-
         return {
             "joueur": player["joueur"],
             "level": player["level"],
             "games_played": player["games_played"],
             "percentage_of_games_won": percentage,
             "overall rank" :  player_rank , 
-            "rank in country": country_rank 
-            
-        }
+            "rank in country": country_rank         }
     else:
         abort(404, description="User not found")
 
 
-#page 3 , nheb nfasakh rouhi 
+#delete account 
 @settings_bp.route("/delete", methods=['DELETE'])
 @swag_from('main.yaml', endpoint='settings/delete')
 @token_required
@@ -88,7 +85,7 @@ def delete(usert):
     else :
          return{"message": "supression not possible at the moment , try again later "}, 404
      
-#page 3 , updati rouhi
+#update account
 @settings_bp.route("/update", methods=['PUT'])
 @swag_from('main.yaml', endpoint='settings/update')
 @token_required

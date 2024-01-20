@@ -8,7 +8,7 @@ from flasgger import swag_from
 
 
 search_bp = Blueprint("search", __name__)
-
+#report users
 @search_bp.route("/report" , methods=['PUT'])
 @swag_from('main.yaml' , endpoint='search/report')
 @token_required
@@ -35,7 +35,7 @@ def report(usert):
 
     
 
-#page 3 , get others by name 
+#get others by name 
 @search_bp.route("/searchbyname" , methods=['POST'])
 @swag_from('main.yaml', endpoint='search/searchbyname')
 @token_required 
@@ -78,7 +78,7 @@ def get(usert):
     else : 
         return{"message" : "no user found"},400
 
-#page 3 , get others by country
+#get others by country
 @search_bp.route("/searchbycountry" , methods=['POST']) 
 @swag_from('main.yaml', endpoint='search/searchbycountry')
 @token_required
@@ -121,7 +121,7 @@ def get_c(usert):
     else : 
         return{"message" : "no user found"} , 400
         
-#page 3 , get others by age 
+#get others by age 
 @search_bp.route("/searchbyage", methods=['POST']) 
 @swag_from('main.yaml', endpoint='search/searchbyage')
 @token_required

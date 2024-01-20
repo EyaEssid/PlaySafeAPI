@@ -33,13 +33,11 @@ def leaderboard():
       return {"message" : "something went wrong"} , 400
      
 
-#page 1 , when i want to sign in 
+# when i want to sign in 
 @auth_bp.route("/signin" , methods=['POST'])
 @swag_from('main.yaml', endpoint='auth/signin')
 def login():
-
     content_type = request.headers.get('Content-Type', '').lower()
-
     if 'application/x-www-form-urlencoded' in content_type:
             username = request.form.get("username")
             password = request.form.get("password")
@@ -60,7 +58,8 @@ def login():
     for user_item in users:
         if user_age >= 18 : 
             if user_item["username"] == username and bcrypt.check_password_hash(user_item["password"], password):
-               token = jwt.encode({'user': username, 'exp': dt.datetime.utcnow() + dt.timedelta(minutes=60)}, SECRET_KEY ,  algorithm='HS256')
+               token = jwt.encode({'user': username, 'exp': dt.datetime.utcnow() + dt.timedelta(minutes=60)}, 
+                                  SECRET_KEY ,  algorithm='HS256')
                return jsonify({"message": "welcome " + username, 'token': token}), 200
             elif user_item["username"] == username and not bcrypt.check_password_hash(user_item["password"], password):
                return jsonify({"message": "wrong password"}), 400
@@ -72,16 +71,14 @@ def login():
                 return jsonify({"message" : "something is wrong , re-check later"}),403
             else:
                 if user_item["username"] == username and  bcrypt.check_password_hash(user_item["password"], password) :
-                  token = jwt.encode({'user': username, 'exp': dt.datetime.utcnow() + dt.timedelta(minutes=60)}, SECRET_KEY ,  algorithm='HS256')
+                  token = jwt.encode({'user': username, 'exp': dt.datetime.utcnow() + dt.timedelta(minutes=60)},
+                                      SECRET_KEY ,  algorithm='HS256')
                   return jsonify({"message": "welcome " + username, 'token': token}), 200
                 elif user_item["username"] == username and not bcrypt.check_password_hash(user_item["password"], password):
                   return jsonify({"message": "wrong password"}), 400
-   
-        
-
     return {"message": "user not found"}, 404
             
-#page 2 , user sign up  
+#user sign up  
 @auth_bp.route("/signup" , methods=['POST'])
 @swag_from('main.yaml', endpoint='auth/signup')
 def signup():
