@@ -1,0 +1,460 @@
+swagger: '2.0'
+info:
+  title: PlaySafeAPI
+  version: 1.0.0
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: token
+    in: query
+paths:
+  /settings/update:
+    put:
+      summary: Update user personal information.
+      description: Description of the update operation.
+      tags:
+        - Analytics & account Settings
+      security:
+        - BearerAuth: []
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: country
+          type: string
+          required: false
+        - in: formData
+          name: phone_number
+          type: string
+          required: false
+        - in: formData
+          name: password
+          type: string
+          required: false
+        - in: formData
+          name: email
+          type: string
+          required: false
+      responses:
+        '200':
+          description: A message confirming the updates.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message confirming the updates.
+        '403':
+          description: The new password does not meet the conditions.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that the new password does not meet some criteria.
+        '404':
+          description: Denial of updates because of the invalidity of some conditions.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no updates were made.
+  /settings/delete:
+    delete:
+      summary: Delete your account.
+      description: This endpoint allows you to delete your account.
+      tags:
+        - Analytics & account Settings 
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Confirmation of the suppression of the account.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message confirming the suppression of the account.
+        '404':
+          description: Denial of the operation.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that the deleting operation was not successful.
+  /settings/stats:
+    get:
+      summary: Check user stats.
+      description: This endpoint allows you to check some analytics of your game.
+      tags:
+        - Analytics & account Settings 
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of statistics of the logged-in user.
+          schema:
+            type: object
+            properties:
+              joueur:
+                type: string
+                description: Name of the user.
+              level:
+                type: integer
+                description: Level of the user.
+              games_played:
+                type: integer
+                description: Number of games played by the user.
+              percentage_of_games_won:
+                type: number
+                description: Percentage of games won by the user.
+              overall_rank:
+                type: integer
+                description: The player rank overall.
+              rank_in_country:
+                type: integer
+                description: The player rank in their country.
+        '404':
+          description: No users found.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+  /settings/profileinfo:
+    get:
+      summary: Check user account information.
+      description: This endpoint allows you to check your account information.
+      tags:
+        - Analytics & account Settings 
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of statistics of the logged-in user.
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: Name of the user.
+              country:
+                type: string
+                description: Country of the user.
+              phone_number:
+                type: string
+                description: Phone number of the user.
+              email:
+                type: string
+                description: Email address of the user.
+              birthdate:
+                type: string
+                description: The user's birthdate.
+        '404':
+          description: No users found.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+  /settings/deletestats:
+    delete:
+      summary: Delete your account's progress.
+      description: This endpoint allows you to delete your account's progress.
+      tags:
+        - Analytics & account Settings 
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Confirmation of the suppression of the progress.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message confirming the suppression of the progress.
+        '404':
+          description: Denial of the operation.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that the deleting operation was not successful.
+
+  /auth/signin:
+     post:
+      summary: Allow users to sign in.
+      description: This endpoint allows you to sign in to your account.
+      parameters:
+        - name: username
+          in: formData
+          required: true
+          type: string
+        - name: password
+          in: formData
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful log in.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: >
+                  A message containing the acceptance of the log in and the
+                  token of the login, which will allow log in for a session
+                  of 60 minutes.
+        '400':
+          description: The password does not match the username.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that the entered password is wrong.
+        '403':
+          description: Denial of access for users under 18 years old after 10 pm.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that it is impossible to log in for
+                  technical reasons.
+        '404':
+          description: No users found with the specified username.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+  /auth/signup:
+    post:
+      summary: Create a new account.
+      description: This endpoint allows you to create a new account.
+      parameters:
+        - name: username
+          in: formData
+          type: string
+          required: true
+          description: The username of the new user. A unique attribute.
+        - name: password
+          in: formData
+          type: string
+          required: true
+          description: The password of the new account.
+        - name: country
+          in: formData
+          type: string
+          required: true
+          description: The country of residency of the new user.
+        - name: email
+          in: formData
+          type: string
+          required: true
+          description: The email address of the new user.
+        - name: phone_number
+          in: formData
+          type: string
+          required: true
+          description: The phone number of the new user.
+        - name: birthdate
+          in: formData
+          type: string
+          required: true
+          description: The birthdate of the new user. Respect the format dd/mm/yyyy.
+      responses:
+        '200':
+          description: Confirmation of the addition of the new account.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message confirming the addition of the account.
+        '400':
+          description: Password does not meet the precise criteria.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: 
+                  A message indicating the conditions that the password does
+                  not meet.
+        '404':
+          description: Denial of the operation.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: 
+                  A message indicating that the addition operation was not
+                  successful.
+  /auth/leaderboard:
+    get:
+      summary: Displays the leaderboard
+      description: This endpoint displays the top 10 players overall in the game.
+      responses:
+        '200':
+          description: A list of the top players.
+          schema:
+            type: object
+            properties:
+              joueur:
+                type: string
+                description: Name of the user.
+              level:
+                type: integer
+                description: Level of the user.
+        '400':
+          description: Cannot display the leaderboard.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that an issue occured while displaying the leaderboard. 
+
+  /search/searchbyage:
+    post:
+      summary: Search for users by age.
+      parameters:
+        - name: age
+          in: formData
+          type: integer
+          required: true
+      tags:
+        - Search and Report Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of users matching the specified age.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message containing the list of users.
+        '404':
+          description: No users found for the specified age.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+  /search/searchbycountry:
+    post:
+      summary: Search for users by country name.
+      parameters:
+        - name: country
+          in: formData
+          type: string
+          required: true
+      tags:
+        - Search and Report Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of users matching the specified country.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message containing the list of users.
+        '400':
+          description: No users found for the specified country.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+  /search/searchbyname:
+    post:
+      summary: Search for users by name.
+      parameters:
+        - name: name
+          in: formData
+          type: string
+          required: true
+      tags:
+        - Search and Report Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of users matching the specified name.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message containing the list of users.
+        '400':
+          description: No users found for the specified name.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+  /search/report:
+    put : 
+      summary: Report users .
+      parameters:
+        - name: name
+          in: formData
+          type: string
+          required: true
+      tags:
+        - Search and Report Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Validation of report.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message confirming the report of the user.
+        '400':
+          description: No users found for the specified name.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that no users were found.
+        '404':
+          description: Impossibility of executing the instruction.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: A message indicating that something went wrong.        
+      
+
+
+    
+    
