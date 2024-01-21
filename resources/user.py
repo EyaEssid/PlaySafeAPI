@@ -3,7 +3,7 @@ from flask import  jsonify, request , Blueprint
 import datetime as dt 
 from datetime import time 
 from dateutil.relativedelta import relativedelta
-from db import add_user, players, users 
+from db import add_user, players, users ,update_global_lists
 from project.templates.code import check_password_strength
 import jwt 
 from .config import SECRET_KEY
@@ -67,7 +67,7 @@ def login():
             current_time = dt.datetime.now().time()
             ten_pm = time(22, 0)  
             ten_am = time (10 ,0)
-            if current_time >= ten_pm and current_time <= ten_am :
+            if (current_time >= ten_pm) or (current_time <= ten_am):
                 return jsonify({"message" : "something is wrong , re-check later"}),403
             else:
                 if user_item["username"] == username and  bcrypt.check_password_hash(user_item["password"], password) :
@@ -98,6 +98,8 @@ def signup():
          phonenumber = user.get("phonenumber")
          email = user.get("email")
          birthdate = user.get("birthdate")
+    if username in users : 
+        return{"message" : "user already exists"} , 403 
     bd = dt.datetime.strptime(birthdate, "%d/%m/%Y")
     formatted_bd = bd.strftime("%Y-%m-%d")
     password_evaluation = check_password_strength(username, email, birthdate, password)
@@ -105,6 +107,7 @@ def signup():
          try:
              hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
              add_user(username, hashed_password, country, phonenumber, email,formatted_bd)
+             update_global_lists()
              return {"message": "user added successfully"}, 200
          except Exception as e:
              print(e)

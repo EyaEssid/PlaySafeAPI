@@ -1,5 +1,5 @@
 from flask import  abort,  request, Blueprint
-from db import delete_user, players, update_country, update_email, update_number, update_pass ,report ,  users, report_list , restart_progress
+from db import delete_user, players, update_global_lists , update_country, update_email, update_number, update_pass ,report ,  users, report_list , restart_progress
 from project.templates.code import check_password_strength
 from .jtoken import token_required
 from flasgger import swag_from
@@ -129,6 +129,7 @@ def update(usert):
              i["email"] = email 
              update_email(usert, email)
            if (c == 1) :
+             update_global_lists()
              return{"message": "account updated succesfully"}, 200 
          except Exception as e:
              print(e)

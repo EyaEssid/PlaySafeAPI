@@ -10,7 +10,6 @@ bcrypt = Bcrypt(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(search_bp, url_prefix='/search')
 app.register_blueprint(settings_bp, url_prefix='/settings')
-
 swagger = Swagger(app, template_file="main.yaml")  #http://127.0.0.1:5000/apidocs/#/
 
 if __name__ == "__main__":

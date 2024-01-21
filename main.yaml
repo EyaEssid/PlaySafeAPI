@@ -304,6 +304,15 @@ paths:
                 description: 
                   A message indicating that the addition operation was not
                   successful.
+        '403':
+          description: Existing user.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: 
+                  A message indicating that the user is already Existing. 
   /auth/leaderboard:
     get:
       summary: Displays the leaderboard

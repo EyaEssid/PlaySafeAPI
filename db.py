@@ -1,5 +1,5 @@
 import mysql.connector
-
+from mysql.connector import RefreshOption
 conn = mysql.connector.connect(
     user='root',
     password='root',
@@ -10,7 +10,7 @@ conn = mysql.connector.connect(
 cursor = conn.cursor() 
 def get_db_connection():
     return  conn, cursor
-
+refresh = RefreshOption.LOG | RefreshOption.THREADS
 #getting the list of users 
 def users_list():
      cursor.execute("SELECT * FROM users;")
@@ -61,10 +61,7 @@ def report_list():
 def report_user(username):
        cursor.execute("UPDATE report SET reports = reports + %s WHERE username = %s;",(1 , username, ))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
+       update_global_lists()
       
 # add a new user/player 
 def add_user(username, password, country, phonenumber, email, birthdate):     
@@ -72,11 +69,7 @@ def add_user(username, password, country, phonenumber, email, birthdate):
        cursor.execute("INSERT INTO players VALUES (%s, %s, %s, %s);",(username, 1 , 0 , 0,))
        cursor.execute("INSERT INTO report VALUES(%s ,  %s);" , (username , 0))
        conn.commit()
-       #to keep the current lists that are used in the application updated ( real time updates)
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
+       update_global_lists()
      
 #delete a user/player
 def delete_user(username):
@@ -84,10 +77,14 @@ def delete_user(username):
        cursor.execute("DELETE FROM users WHERE username = %s;",(username,))
        cursor.execute("DELETE FROM report WHERE username = %s;",(username,))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
+       update_global_lists()
+
+def update_global_lists():
+    global users, players, report
+    conn.cmd_refresh(refresh)
+    users = users_list()
+    players = players_list()
+    report = report_list() 
 
 #delete a user/player
 def restart_progress(username):
@@ -95,43 +92,26 @@ def restart_progress(username):
        cursor.execute("UPDATE players SET games_played = %s WHERE username = %s;",(0 , username,  ))
        cursor.execute("UPDATE players SET games_won = %s WHERE username = %s;",(0 , username,  ))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
-     
+       update_global_lists()
 def update_pass(username , password):
        cursor.execute("UPDATE users SET password = %s WHERE username = %s;",(password , username, ))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
+       update_global_lists()
 
 def update_country(username , country):
        cursor.execute("UPDATE users SET country = %s WHERE username = %s;",( country, username, ))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
-
+       update_global_lists()
 def update_number(username , phone_number):
        cursor.execute("UPDATE users SET phone_number = %s WHERE username = %s;",(phone_number, username,  ))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
+       update_global_lists()
       
 
 def update_email(username , email):
        cursor.execute("UPDATE users SET email = %s WHERE username = %s;",( email, username, ))
        conn.commit()
-       global users, players, report
-       users = users_list()
-       players = players_list()
-       report = report_list()
+       update_global_lists()
       
 users = users_list()
 players = players_list()
